@@ -3,14 +3,22 @@ package br.com.dbug.questlab.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
+@Entity
+@Table(name = "concurso")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ConcursoModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    private Integer id;
 
     @Column(name = "nome", length = 150, nullable = false)
     @NotNull(message = "O nome não pode ser nulo")
@@ -18,26 +26,23 @@ public class ConcursoModel {
     private String nome;
 
     @Column(name = "ano", nullable = false)
+    @NotNull(message = "O ano não pode ser nulo")
+    @Temporal(TemporalType.DATE)
     private Date ano;
 
+    @Column(name = "cancelado", nullable = false)
+    private Boolean cancelado = false;
+
     @Column(name = "ativo", nullable = false)
-    private boolean ativo;
+    private Boolean ativo = true;
 
-    //RELACIONAMENTO COM BANCA (FK)
-    @ManyToOne
-    @JoinColumn(name = "idBanca")
-    private int idBanca;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idBanca", nullable = false)
+    @NotNull(message = "A banca não pode ser nula")
+    private BancaModel banca;
 
-     //@Column(name = "id_banca", nullable = false)
-     //private int idBanca;
-
-    //RELACIONAMENTO COM INSTITUICAO (FK)
-
-    @ManyToOne
-    @JoinColumn(name = "id_Instituicao")
-    private int id_Instituicao;
-
-    //@Column(name = "id_Instituicao", nullable = false)
-    //private int id_Instituicao;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idInstituicao", nullable = false)
+    @NotNull(message = "A instituição não pode ser nula")
+    private InstituicaoModel instituicao;
 }
-

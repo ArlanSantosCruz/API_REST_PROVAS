@@ -1,27 +1,41 @@
 package br.com.dbug.questlab.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
+@Entity
+@Table(name = "usuarioResposta")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UsuarioRespostaModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    private Integer id;
 
     @Column(name = "dataResposta", nullable = false)
+    @NotNull(message = "A data de resposta não pode ser nula")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataResposta;
 
-    @Column(name = "idUsuario", nullable = false)
-    private int idUsuario;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUsuario", nullable = false)
+    @NotNull(message = "O usuário não pode ser nulo")
+    private UsuarioModel usuario;
 
-    @Column(name = "idQuestao", nullable = false)
-    private int idQuestao;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idQuestao", nullable = false)
+    @NotNull(message = "A questão não pode ser nula")
+    private QuestaoModel questao;
 
-    @Column(name = "idAlternativaEscolhida", nullable = false)
-    private int idAlternativaEscolhida;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAlternativaEscolhida", nullable = false)
+    @NotNull(message = "A alternativa escolhida não pode ser nula")
+    private AlternativaModel alternativaEscolhida;
 }

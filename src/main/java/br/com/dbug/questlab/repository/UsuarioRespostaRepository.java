@@ -1,6 +1,5 @@
 package br.com.dbug.questlab.repository;
 
-import br.com.dbug.questlab.model.ProvaModel;
 import br.com.dbug.questlab.model.UsuarioRespostaModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -9,10 +8,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-//extends pode usar JpaRepository ou CRUDrepository
 @Repository
-public interface UsuarioRespostaRepository extends JpaRepository<UsuarioRespostaRepository,Integer> {
+public interface UsuarioRespostaRepository extends JpaRepository<UsuarioRespostaModel, Integer> {
 
-    Optional<UsuarioRespostaModel> findBydataResposta(Long usuarioId, Long questaoId);
+    Optional<UsuarioRespostaModel> findByUsuarioIdAndQuestaoId(Integer usuarioId, Integer questaoId);
 
+    List<UsuarioRespostaModel> findByUsuarioId(Integer usuarioId);
+    List<UsuarioRespostaModel> findByQuestaoId(Integer questaoId);
+
+    List<UsuarioRespostaModel> findByDataRespostaBetween(Date inicio, Date fim);
+    List<UsuarioRespostaModel> findByUsuarioIdAndDataRespostaBetween(Integer usuarioId, Date inicio, Date fim);
+
+    boolean existsByUsuarioIdAndQuestaoId(Integer usuarioId, Integer questaoId);
 }

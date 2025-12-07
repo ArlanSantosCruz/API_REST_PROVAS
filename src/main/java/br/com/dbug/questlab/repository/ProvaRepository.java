@@ -8,15 +8,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-//extends pode usar JpaRepository ou CRUDrepository
 @Repository
-public interface ProvaRepository extends JpaRepository<ProvaModel,Integer> {
+public interface ProvaRepository extends JpaRepository<ProvaModel, Integer> {
 
-    Optional<ProvaModel> FindByDataAplicacao(String dataAplicacao);
+    Optional<ProvaModel> findByNome(String nome);
+
+    boolean existsByNome(String nome);
+
+    Optional<ProvaModel> findByDataAplicacao(Date dataAplicacao);
+
     boolean existsByDataAplicacao(Date dataAplicacao);
 
-    List<ProvaModel> findByDataResposta(Date inicio, Date fim);
+    List<ProvaModel> findByDataAplicacaoBetween(Date inicio, Date fim);
 
-    List<ProvaModel> findByIdUsuarioAndDataResposta(int idUsuario, Date inicio, Date fim);
+    List<ProvaModel> findByConcursoId(Integer concursoId);
+
+    List<ProvaModel> findByCargoId(Integer cargoId);
 
 }

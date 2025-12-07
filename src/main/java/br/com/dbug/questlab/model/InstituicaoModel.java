@@ -1,30 +1,35 @@
 package br.com.dbug.questlab.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "instituicao")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class InstituicaoModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    private Integer id;
 
-    @Column(name = "razaoSocial,", length = 150, nullable = false)
-    @NotNull(message = "A razaoSocial, não pode ser nula")
-    @NotBlank(message = "A razaoSocial, é obrigatória")
+    @Column(name = "razaoSocial", length = 150, nullable = false)
+    @NotNull(message = "A razão social não pode ser nula")
+    @NotBlank(message = "A razão social é obrigatória")
     private String razaoSocial;
 
-    @Column(name = "sigla", length = 5, nullable = false)
+    @Column(name = "sigla", length = 5, nullable = false, unique = true)
     @NotNull(message = "A sigla não pode ser nula")
     @NotBlank(message = "A sigla é obrigatória")
     private String sigla;
 
-    @Column(name = "cnpj", length = 14, nullable = false)
+    @Column(name = "cnpj", length = 14, nullable = false, unique = true)
     @NotNull(message = "O cnpj não pode ser nulo")
     @NotBlank(message = "O cnpj é obrigatório")
     private String cnpj;
@@ -41,6 +46,5 @@ public class InstituicaoModel {
     private String telefone;
 
     @Column(name = "ativo", nullable = false)
-    private boolean ativo;
-
+    private Boolean ativo = true;
 }
