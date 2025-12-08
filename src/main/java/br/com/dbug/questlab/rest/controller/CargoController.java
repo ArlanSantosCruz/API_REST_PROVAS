@@ -3,7 +3,7 @@ package br.com.dbug.questlab.rest.controller;
 import br.com.dbug.questlab.rest.dto.filter.CargoFilterDTO;
 import br.com.dbug.questlab.rest.dto.request.CargoRequestDTO;
 import br.com.dbug.questlab.rest.dto.response.CargoResponseDTO;
-import br.com.dbug.questlab.service.CargoService;
+import br.com.dbug.questlab.service.CargoService; // ⬅️ SERVICE, não Repository!
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,11 +23,13 @@ import java.util.List;
 @Tag(name = "Cargos", description = "Gerenciamento de cargos")
 public class CargoController {
 
+    // ⬅️ IMPORTANTE: Injetar o SERVICE, não o Repository!
     private final CargoService cargoService;
 
     @PostMapping
     @Operation(summary = "Criar novo cargo")
-    public ResponseEntity<CargoResponseDTO> create(@Valid @RequestBody CargoRequestDTO request) {
+    public ResponseEntity<CargoResponseDTO> create(
+            @Valid @RequestBody CargoRequestDTO request) {
         log.info("Criando novo cargo: {}", request.getNome());
         CargoResponseDTO response = cargoService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

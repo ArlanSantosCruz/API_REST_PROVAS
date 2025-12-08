@@ -8,14 +8,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Service
 @Slf4j
 public abstract class CrudServiceImpl<Entity, ID, RequestDTO, ResponseDTO>
-        implements CrudService<ID, RequestDTO, ResponseDTO> {
+        implements CrudService<ID, RequestDTO, ResponseDTO, Entity> {
 
     protected final JpaRepository<Entity, ID> repository;
     protected final ModelMapper modelMapper;

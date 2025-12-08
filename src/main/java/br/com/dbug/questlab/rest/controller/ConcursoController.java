@@ -3,7 +3,7 @@ package br.com.dbug.questlab.rest.controller;
 import br.com.dbug.questlab.rest.dto.filter.ConcursoFilterDTO;
 import br.com.dbug.questlab.rest.dto.request.ConcursoRequestDTO;
 import br.com.dbug.questlab.rest.dto.response.ConcursoResponseDTO;
-import br.com.dbug.questlab.service.ConcursoService;
+import br.com.dbug.questlab.service.ConcursoService; // ⬅️ SERVICE, não Repository!
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,11 +23,13 @@ import java.util.List;
 @Tag(name = "Concursos", description = "Gerenciamento de concursos públicos")
 public class ConcursoController {
 
+    // ⬅️ IMPORTANTE: Injetar o SERVICE, não o Repository!
     private final ConcursoService concursoService;
 
     @PostMapping
     @Operation(summary = "Criar novo concurso")
-    public ResponseEntity<ConcursoResponseDTO> create(@Valid @RequestBody ConcursoRequestDTO request) {
+    public ResponseEntity<ConcursoResponseDTO> create(
+            @Valid @RequestBody ConcursoRequestDTO request) {
         log.info("Criando novo concurso: {}", request.getNome());
         ConcursoResponseDTO response = concursoService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

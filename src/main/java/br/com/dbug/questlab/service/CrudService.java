@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 @Service
 
-public interface CrudService<ID, RequestDTO, ResponseDTO> {
+public interface CrudService<ID, RequestDTO, ResponseDTO, C> {
     ResponseDTO create(RequestDTO request);
     ResponseDTO findById(ID id);
     List<ResponseDTO> findAll();

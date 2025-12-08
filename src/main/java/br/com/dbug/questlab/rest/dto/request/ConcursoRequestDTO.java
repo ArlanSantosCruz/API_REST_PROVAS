@@ -1,32 +1,37 @@
 package br.com.dbug.questlab.rest.dto.request;
 
-
 import br.com.dbug.questlab.rest.dto.simplified.BancaIdDTO;
 import br.com.dbug.questlab.rest.dto.simplified.InstituicaoIdDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ConcursoRequestDTO {
-    @NotBlank(message = "Nome é obrigatório")
-    @Size(min = 3, max = 150, message = "Nome deve ter entre 3 e 150 caracteres")
+
+    @NotNull(message = "O nome não pode ser nulo")
+    @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotNull(message = "Ano é obrigatório")
+    @NotNull(message = "O ano não pode ser nulo")
     private Date ano;
 
     private Boolean cancelado = false;
     private Boolean ativo = true;
 
-    @NotNull(message = "Banca é obrigatória")
+    // IMPORTANTE: Usar SimplifiedDTO, não Integer!
+    @NotNull(message = "A banca não pode ser nula")
+    @Valid
     private BancaIdDTO banca;
 
-    @NotNull(message = "Instituição é obrigatória")
+    @NotNull(message = "A instituição não pode ser nula")
+    @Valid
     private InstituicaoIdDTO instituicao;
 }

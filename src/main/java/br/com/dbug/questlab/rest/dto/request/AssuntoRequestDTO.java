@@ -1,19 +1,23 @@
 package br.com.dbug.questlab.rest.dto.request;
 
 import br.com.dbug.questlab.rest.dto.simplified.DisciplinaIdDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AssuntoRequestDTO {
-    @NotBlank(message = "Nome é obrigatório")
-    @Size(min = 3, max = 150, message = "Nome deve ter entre 3 e 150 caracteres")
+
+    @NotNull(message = "O nome não pode ser nulo")
+    @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotNull(message = "Disciplina é obrigatória")
-    private DisciplinaIdDTO disciplina;
+    @NotNull(message = "A disciplina não pode ser nula")
+    @Valid
+    private DisciplinaIdDTO disciplina; // ⬅️ Usar SimplifiedDTO
 }

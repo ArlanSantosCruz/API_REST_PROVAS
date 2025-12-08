@@ -1,27 +1,30 @@
 package br.com.dbug.questlab.rest.dto.request;
 
-
 import br.com.dbug.questlab.rest.dto.simplified.QuestaoIdDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AlternativaRequestDTO {
-    @NotBlank(message = "Texto é obrigatório")
-    @Size(min = 1, max = 500, message = "Texto deve ter entre 1 e 500 caracteres")
+
+    @NotNull(message = "O texto não pode ser nulo")
+    @NotBlank(message = "O texto é obrigatório")
     private String texto;
 
-    @NotBlank(message = "Enunciado é obrigatório")
-    @Size(min = 1, max = 500, message = "Enunciado deve ter entre 1 e 500 caracteres")
+    @NotNull(message = "O enunciado não pode ser nulo")
+    @NotBlank(message = "O enunciado é obrigatório")
     private String enunciado;
 
-    @NotNull(message = "Indicador de correção é obrigatório")
+    @NotNull(message = "O campo correta não pode ser nulo")
     private Boolean correta;
 
-    @NotNull(message = "Questão é obrigatória")
-    private QuestaoIdDTO questao;
+    @NotNull(message = "A questão não pode ser nula")
+    @Valid
+    private QuestaoIdDTO questao; // ⬅️ Usar SimplifiedDTO
 }

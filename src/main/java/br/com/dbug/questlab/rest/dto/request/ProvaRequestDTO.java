@@ -1,28 +1,33 @@
 package br.com.dbug.questlab.rest.dto.request;
 
-
 import br.com.dbug.questlab.rest.dto.simplified.CargoIdDTO;
 import br.com.dbug.questlab.rest.dto.simplified.ConcursoIdDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProvaRequestDTO {
-    @NotBlank(message = "Nome é obrigatório")
-    @Size(min = 3, max = 150, message = "Nome deve ter entre 3 e 150 caracteres")
+
+    @NotNull(message = "O nome não pode ser nulo")
+    @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotNull(message = "Data de aplicação é obrigatória")
+    @NotNull(message = "A data de aplicação não pode ser nula")
     private Date dataAplicacao;
 
-    @NotNull(message = "Concurso é obrigatório")
-    private ConcursoIdDTO concurso;
+    @NotNull(message = "O concurso não pode ser nulo")
+    @Valid
+    private ConcursoIdDTO concurso; // ⬅️ Usar SimplifiedDTO
 
-    @NotNull(message = "Cargo é obrigatório")
-    private CargoIdDTO cargo;
+    @NotNull(message = "O cargo não pode ser nulo")
+    @Valid
+    private CargoIdDTO cargo; // ⬅️ Usar SimplifiedDTO
 }

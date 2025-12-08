@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-//extends pode usar JpaRepository ou CRUDrepository
 @Repository
 public interface QuestaoRepository extends JpaRepository<QuestaoModel,Integer> {
 
@@ -20,6 +19,4 @@ public interface QuestaoRepository extends JpaRepository<QuestaoModel,Integer> {
     boolean existsByComentarioProfessor(String comentarioProfessor);
 
     Optional<QuestaoModel> findByEnunciado(String enunciado);
-    boolean existsEnunciado(String enunciado);
-
-}
+    boolean existsByEnunciado(String enunciado);}
