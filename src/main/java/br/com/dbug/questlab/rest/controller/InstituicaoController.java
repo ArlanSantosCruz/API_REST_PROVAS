@@ -3,7 +3,7 @@ package br.com.dbug.questlab.rest.controller;
 import br.com.dbug.questlab.rest.dto.filter.InstituicaoFilterDTO;
 import br.com.dbug.questlab.rest.dto.request.InstituicaoRequestDTO;
 import br.com.dbug.questlab.rest.dto.response.InstituicaoResponseDTO;
-import br.com.dbug.questlab.service.InstituicaoService; // ⬅️ SERVICE, não Repository!
+import br.com.dbug.questlab.service.InstituicaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,7 +23,6 @@ import java.util.List;
 @Tag(name = "Instituições", description = "Gerenciamento de instituições")
 public class InstituicaoController {
 
-    // ⬅️ IMPORTANTE: Injetar o SERVICE, não o Repository!
     private final InstituicaoService instituicaoService;
 
     @PostMapping
