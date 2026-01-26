@@ -4,11 +4,16 @@ import br.com.dbug.questlab.exception.BusinessException;
 import br.com.dbug.questlab.exception.ResourceNotFoundException;
 import br.com.dbug.questlab.model.DisciplinaModel;
 import br.com.dbug.questlab.repository.DisciplinaRepository;
+import br.com.dbug.questlab.rest.dto.filter.DisciplinaFilterDTO;
 import br.com.dbug.questlab.rest.dto.request.DisciplinaRequestDTO;
 import br.com.dbug.questlab.rest.dto.response.DisciplinaResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +58,23 @@ public class DisciplinaService {
         return repository.findAll().stream()
                 .map(entity -> modelMapper.map(entity, DisciplinaResponseDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    // ⬇️ MÉTODO QUE ESTAVA FALTANDO
+    @Transactional(readOnly = true)
+    public Page<DisciplinaResponseDTO> findAllPaginated(DisciplinaFilterDTO filter) {
+        log.debug("Listando disciplinas com paginação");
+
+        Pageable pageable = PageRequest.of(
+                filter.getPage(),
+                filter.getSize(),
+                Sort.by(filter.getSortDirection().equalsIgnoreCase("DESC") ?
+                                Sort.Direction.DESC : Sort.Direction.ASC,
+                        filter.getSortBy())
+        );
+
+        Page<DisciplinaModel> page = repository.findAll(pageable);
+        return page.map(entity -> modelMapper.map(entity, DisciplinaResponseDTO.class));
     }
 
     @Transactional
