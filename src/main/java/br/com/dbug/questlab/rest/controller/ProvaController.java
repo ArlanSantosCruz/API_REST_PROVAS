@@ -13,7 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import br.com.dbug.questlab.rest.dto.filter.RelatorioProvasConcursoFilterDTO;
+import br.com.dbug.questlab.rest.dto.response.RelatorioProvasConcursoDTO;
 import java.util.List;
 
 @Slf4j
@@ -75,4 +76,20 @@ public class ProvaController {
         provaService.delete(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/relatorio/por-concurso")
+    @Operation(summary = "Relatório de provas por concurso")
+    public ResponseEntity<Page<RelatorioProvasConcursoDTO>> relatorioProvasPorConcurso(
+            @RequestParam(required = false) Integer concursoId,
+            @RequestParam(required = false) Integer ano,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        RelatorioProvasConcursoFilterDTO filter = new RelatorioProvasConcursoFilterDTO(
+                concursoId, ano, page, size
+        );
+
+        Page<RelatorioProvasConcursoDTO> relatorio = provaService.relatorioProvasPorConcurso(filter);
+        return ResponseEntity.ok(relatorio);
+    }
+
 }

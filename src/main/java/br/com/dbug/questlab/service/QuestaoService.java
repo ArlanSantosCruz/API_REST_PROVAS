@@ -1,5 +1,7 @@
 package br.com.dbug.questlab.service;
-
+import br.com.dbug.questlab.rest.dto.filter.RelatorioQuestoesAnuladasFilterDTO;
+import br.com.dbug.questlab.rest.dto.response.RelatorioQuestoesAnuladasDTO;
+import br.com.dbug.questlab.repository.projection.QuestoesAnuladasProjection;
 import br.com.dbug.questlab.exception.BusinessException;
 import br.com.dbug.questlab.exception.ResourceNotFoundException;
 import br.com.dbug.questlab.model.AssuntoModel;
@@ -18,10 +20,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import br.com.dbug.questlab.rest.dto.response.RelatorioDisciplinaDTO;
+import br.com.dbug.questlab.repository.projection.QuestoesPorDisciplinaProjection;
+import java.util.stream.Collectors;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +41,7 @@ public class QuestaoService {
     private final ProvaRepository provaRepository;
     private final AssuntoRepository assuntoRepository;
     private final ModelMapper modelMapper;
+    private final QuestaoRepository repository;
 
     @Transactional
     public QuestaoResponseDTO create(QuestaoRequestDTO request) {
@@ -239,4 +246,61 @@ public class QuestaoService {
 
         return response;
     }
+    @Transactional(readOnly = true)
+    public List<RelatorioDisciplinaDTO> relatorioQuestoesPorDisciplina() {
+        log.info("Gerando relatório de questões por disciplina");
+
+        List<QuestoesPorDisciplinaProjection> result = repository.findQuestoesPorDisciplina();
+
+        return result.stream()
+                .map(proj -> new RelatorioDisciplinaDTO(
+                        proj.getDisciplinaId(),
+                        proj.getDisciplinaNome(),
+                        proj.getTotalQuestoes(),
+                        proj.getTotalQuestoesAnuladas()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<RelatorioQuestoesAnuladasDTO> relatorioQuestoesAnuladasPorPeriodo(
+            RelatorioQuestoesAnuladasFilterDTO filter) {
+        log.info("Gerando relatório de questões anuladas por período: {} a {}",
+                filter.getDataInicial(), filter.getDataFinal());
+
+        // Validação das datas
+        if (filter.getDataInicial().isAfter(filter.getDataFinal())) {
+            throw new IllegalArgumentException("Data inicial não pode ser posterior à data final");
+        }
+
+        Pageable pageable = PageRequest.of(
+                filter.getPage(),
+                filter.getSize(),
+                Sort.by(Sort.Direction.DESC, "dataAnulacao")
+        );
+
+        Page<QuestoesAnuladasProjection> result = repository.findQuestoesAnuladasPorPeriodo(
+                filter.getDataInicial(),
+                filter.getDataFinal(),
+                pageable
+        );
+
+        return result.map(proj -> {
+            // Resumir enunciado (primeiros 100 caracteres)
+            String enunciadoResumido = proj.getEnunciado();
+            if (enunciadoResumido != null && enunciadoResumido.length() > 100) {
+                enunciadoResumido = enunciadoResumido.substring(0, 100) + "...";
+            }
+
+            return new RelatorioQuestoesAnuladasDTO(
+                    enunciadoResumido,
+                    proj.getDisciplina(),
+                    proj.getAssunto(),
+                    proj.getDataAnulacao(),
+                    proj.getComentarioProfessor()
+            );
+        });
+    }
+
+
 }

@@ -1,5 +1,8 @@
 package br.com.dbug.questlab.rest.controller;
-
+import br.com.dbug.questlab.rest.dto.filter.RelatorioQuestoesAnuladasFilterDTO;
+import br.com.dbug.questlab.rest.dto.response.RelatorioQuestoesAnuladasDTO;
+import jakarta.validation.Valid;
+import java.time.LocalDate;
 import br.com.dbug.questlab.rest.dto.request.QuestaoRequestDTO;
 import br.com.dbug.questlab.rest.dto.response.QuestaoResponseDTO;
 import br.com.dbug.questlab.rest.dto.response.RelatorioDisciplinaDTO;
@@ -16,10 +19,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import br.com.dbug.questlab.rest.dto.response.RelatorioDisciplinaDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 /**
@@ -204,4 +210,30 @@ public class QuestaoController {
 
         return ResponseEntity.ok(relatorio);
     }
+
+    //Relatório questão por disciplina
+
+    @GetMapping("/relatorio/por-disciplina")
+    @Operation(summary = "Relatório de questões por disciplina")
+    public ResponseEntity<List<RelatorioDisciplinaDTO>> relatorioQuestoesPorDisciplina() {
+        List<RelatorioDisciplinaDTO> relatorio = questaoService.relatorioQuestoesPorDisciplina();
+        return ResponseEntity.ok(relatorio);
+    }
+
+    @GetMapping("/relatorio/anuladas-por-periodo")
+    @Operation(summary = "Relatório de questões anuladas por período")
+    public ResponseEntity<Page<RelatorioQuestoesAnuladasDTO>> relatorioQuestoesAnuladasPorPeriodo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        RelatorioQuestoesAnuladasFilterDTO filter = new RelatorioQuestoesAnuladasFilterDTO(
+                dataInicial, dataFinal, page, size
+        );
+
+        Page<RelatorioQuestoesAnuladasDTO> relatorio = questaoService.relatorioQuestoesAnuladasPorPeriodo(filter);
+        return ResponseEntity.ok(relatorio);
+    }
+
 }

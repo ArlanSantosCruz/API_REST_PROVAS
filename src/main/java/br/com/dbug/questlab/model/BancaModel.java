@@ -22,7 +22,7 @@ public class BancaModel {
     @Column(name = "razaoSocial", length = 150, nullable = false)
     @NotNull(message = "A razão social não pode ser nula")
     @NotBlank(message = "A razão social é obrigatória")
-    private String razaoSocial;
+    private String nome;
 
     @Column(name = "sigla", length = 5, nullable = false, unique = true)
     @NotNull(message = "A sigla não pode ser nula")

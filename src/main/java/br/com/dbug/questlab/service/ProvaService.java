@@ -1,5 +1,7 @@
 package br.com.dbug.questlab.service;
-
+import br.com.dbug.questlab.rest.dto.filter.RelatorioProvasConcursoFilterDTO;
+import br.com.dbug.questlab.rest.dto.response.RelatorioProvasConcursoDTO;
+import br.com.dbug.questlab.repository.projection.ProvasConcursoProjection;
 import br.com.dbug.questlab.exception.ResourceNotFoundException;
 import br.com.dbug.questlab.model.CargoModel;
 import br.com.dbug.questlab.model.ConcursoModel;
@@ -149,5 +151,29 @@ public class ProvaService {
         return page.map(prova -> modelMapper.map(prova, ProvaResponseDTO.class));
     }
 
+    @Transactional(readOnly = true)
+    public Page<RelatorioProvasConcursoDTO> relatorioProvasPorConcurso(RelatorioProvasConcursoFilterDTO filter) {
+        log.info("Gerando relatório de provas por concurso");
+
+        Pageable pageable = PageRequest.of(
+                filter.getPage(),
+                filter.getSize(),
+                Sort.by(Sort.Direction.DESC, "dataAplicacao")
+        );
+
+        Page<ProvasConcursoProjection> result = repository.findProvasPorConcurso(
+                filter.getConcursoId(),
+                filter.getAno(),
+                pageable
+        );
+
+        return result.map(proj -> new RelatorioProvasConcursoDTO(
+                proj.getNomeConcurso(),
+                proj.getAno(),
+                proj.getNomeProva(),
+                proj.getCargoAssociado(),
+                proj.getDataAplicacao()
+        ));
+    }
 
 }

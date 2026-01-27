@@ -76,7 +76,7 @@ public class BancaService {
             throw new BusinessException("Sigla já cadastrada: " + request.getSigla());
         }
 
-        entity.setRazaoSocial(request.getRazaoSocial());
+        entity.setNome(request.getRazaoSocial());
         entity.setSigla(request.getSigla());
         entity.setCnpj(request.getCnpj());
         entity.setEmail(request.getEmail());

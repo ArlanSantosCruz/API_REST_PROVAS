@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class UsuarioRespostaModel {
 
     @Id
@@ -38,4 +40,15 @@ public class UsuarioRespostaModel {
     @JoinColumn(name = "idAlternativaEscolhida", nullable = false)
     @NotNull(message = "A alternativa escolhida não pode ser nula")
     private AlternativaModel alternativaEscolhida;
+
+    @Column(name = "acerto", nullable = false)
+    private Boolean acerto = false;
+
+    public Boolean getAcerto() {
+        return acerto;
+    }
+
+    public void setAcerto(Boolean acerto) {
+        this.acerto = acerto;
+    }
 }

@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "questao")
 @Data
@@ -40,4 +42,12 @@ public class QuestaoModel {
     @JoinColumn(name = "idAssunto", nullable = false)
     @NotNull(message = "O assunto não pode ser nulo")
     private AssuntoModel assunto;
+
+    @Column(name = "ativo")
+    private Boolean ativo = true;
+
+    @Column(name = "data_anulacao")
+    private LocalDate dataAnulacao;
+
+
 }
