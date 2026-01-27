@@ -177,17 +177,15 @@ public class QuestaoController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * UC-01: Gera relatório de questões por disciplina
-     *
-     * Retorna um relatório com:
-     * - Nome da disciplina
-     * - Total de questões ativas (não anuladas)
-     * - Total de questões anuladas
-     * - Total geral
-     *
-     * @return Lista de relatórios agrupados por disciplina
-     */
+
+     //Retorna um relatório com:
+     //Nome da disciplina
+     //Total de questões ativas (não anuladas)
+     //Total de questões anuladas
+     //Total geral
+
+     //@return Lista de relatórios agrupados por disciplina
+
     @GetMapping("/relatorios/por-disciplina")
     @Operation(
             summary = "UC-01: Relatório de Questões por Disciplina",

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-//extends pode usar JpaRepository ou CRUDrepository
 @Repository
 public interface ConcursoRepository extends JpaRepository<ConcursoModel,Integer> {
 

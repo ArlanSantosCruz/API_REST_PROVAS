@@ -8,8 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioIdDTO {
-    private Integer id;
     private String nome;
     private String email;
     private String perfil;
+    private Integer page = 0;
+    private Integer size = 10;
+    private String sortBy = "id";
+    private String sortDirection = "ASC";
 }

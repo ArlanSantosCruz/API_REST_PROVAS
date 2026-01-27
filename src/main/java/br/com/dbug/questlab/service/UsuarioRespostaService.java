@@ -15,6 +15,7 @@ import br.com.dbug.questlab.rest.dto.response.UsuarioRespostaResponseDTO;
 import br.com.dbug.questlab.rest.dto.simplified.AlternativaIdDTO;
 import br.com.dbug.questlab.rest.dto.simplified.QuestaoIdDTO;
 import br.com.dbug.questlab.rest.dto.simplified.UsuarioIdDTO;
+import io.micrometer.common.KeyValues;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -261,21 +262,17 @@ public class UsuarioRespostaService {
     }
 
     @Transactional(readOnly = true)
-    public List<UsuarioRespostaResponseDTO> findRespostasIncorretasByUsuarioId(Integer usuarioId) {
+    public Long findRespostasIncorretasByUsuarioId(Integer usuarioId) {
         log.debug("Buscando respostas incorretas do usuário ID: {}", usuarioId);
 
-        return usuarioRespostaRepository.findByUsuarioIdAndAcerto(usuarioId, false).stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+        return usuarioRespostaRepository.countByUsuarioIdAndAcerto(usuarioId, false);
     }
 
     @Transactional(readOnly = true)
-    public List<UsuarioRespostaResponseDTO> findRespostasCorretasByUsuarioId(Integer usuarioId) {
+    public Long findRespostasCorretasByUsuarioId(Integer usuarioId) {
         log.debug("Buscando respostas corretas do usuário ID: {}", usuarioId);
 
-        return usuarioRespostaRepository.findByUsuarioIdAndAcerto(usuarioId, true).stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+        return usuarioRespostaRepository.countByUsuarioIdAndAcerto(usuarioId, true);
     }
 
     @Transactional(readOnly = true)
@@ -302,12 +299,16 @@ public class UsuarioRespostaService {
 
     @Transactional(readOnly = true)
     public long countRespostasCorretasByUsuarioId(Integer usuarioId) {
-        return usuarioRespostaRepository.findByUsuarioIdAndAcerto(usuarioId, true).size();
+        return usuarioRespostaRepository.countByUsuarioIdAndAcerto(usuarioId, true);
     }
+
+
+
 
     @Transactional(readOnly = true)
     public long countRespostasIncorretasByUsuarioId(Integer usuarioId) {
-        return usuarioRespostaRepository.findByUsuarioIdAndAcerto(usuarioId, false).size();
+        return usuarioRespostaRepository.countByUsuarioIdAndAcerto(usuarioId, false);
+
     }
 
     // Método auxiliar para conversão

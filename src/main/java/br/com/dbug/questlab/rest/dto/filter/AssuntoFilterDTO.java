@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AssuntoFilterDTO {
+public class    AssuntoFilterDTO {
     private String nome;
     private Integer disciplinaId;
     private Integer page = 0;

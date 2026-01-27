@@ -1,6 +1,7 @@
 package br.com.dbug.questlab.repository;
 
 import br.com.dbug.questlab.model.UsuarioRespostaModel;
+import io.micrometer.common.KeyValues;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,11 @@ public interface UsuarioRespostaRepository extends JpaRepository<UsuarioResposta
     List<UsuarioRespostaModel> findByUsuarioIdAndDataRespostaBetween(Integer usuarioId, Date inicio, Date fim);
 
     boolean existsByUsuarioIdAndQuestaoId(Integer usuarioId, Integer questaoId);
+
+    long countByUsuarioId(Integer usuarioId);
+
+    Long countByUsuarioIdAndAcerto(Integer usuarioId, Boolean acerto);
+
+
+    long countByQuestaoId(Integer questaoId);
 }

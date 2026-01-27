@@ -1,6 +1,7 @@
 package br.com.dbug.questlab.rest.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,4 +16,8 @@ public class CargoRequestDTO {
     @NotBlank(message = "Escolaridade é obrigatória")
     @Size(min = 3, max = 150, message = "Escolaridade deve ter entre 3 e 150 caracteres")
     private String escolaridade;
+
+    public String getNivelEscolaridade() {
+        return escolaridade;
+    }
 }

@@ -1,11 +1,15 @@
 package br.com.dbug.questlab.service;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import br.com.dbug.questlab.rest.dto.filter.CargoFilterDTO;
+import br.com.dbug.questlab.rest.dto.response.CargoResponseDTO;
 import br.com.dbug.questlab.exception.BusinessException;
 import br.com.dbug.questlab.exception.ResourceNotFoundException;
 import br.com.dbug.questlab.model.CargoModel;
 import br.com.dbug.questlab.repository.CargoRepository;
 import br.com.dbug.questlab.rest.dto.request.CargoRequestDTO;
-import br.com.dbug.questlab.rest.dto.response.CargoResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -83,4 +87,39 @@ public class CargoService {
 
         repository.deleteById(id);
     }
+
+    @Transactional(readOnly = true)
+    public Page<CargoResponseDTO> findAllPaginated(CargoFilterDTO filter) {
+        log.info("Listando cargos com filtros e paginação");
+
+        // Configura a ordenação
+        Sort sort = Sort.by(
+                filter.getSortDirection() != null && filter.getSortDirection().equalsIgnoreCase("DESC")
+                        ? Sort.Direction.DESC
+                        : Sort.Direction.ASC,
+                filter.getSortBy() != null ? filter.getSortBy() : "id"
+        );
+
+        // Cria o objeto Pageable
+        Pageable pageable = PageRequest.of(
+                filter.getPage() != null ? filter.getPage() : 0,
+                filter.getSize() != null ? filter.getSize() : 10,
+                sort
+        );
+
+        // Busca com ou sem filtros
+        Page<CargoModel> page;
+
+        if (filter.getNome() != null && !filter.getNome().isEmpty()) {
+            // Busca por nome (case insensitive)
+            page = repository.findByNomeContainingIgnoreCase(filter.getNome(), pageable);
+        } else {
+            // Busca todos
+            page = repository.findAll(pageable);
+        }
+
+        // Converte para DTO
+        return page.map(cargo -> modelMapper.map(cargo, CargoResponseDTO.class));
+    }
 }
+

@@ -20,4 +20,8 @@ public class AssuntoRequestDTO {
     @NotNull(message = "A disciplina não pode ser nula")
     @Valid
     private DisciplinaIdDTO disciplina; // ⬅️ Usar SimplifiedDTO
+
+    public Integer getDisciplinaId() {
+        return 0;
+    }
 }

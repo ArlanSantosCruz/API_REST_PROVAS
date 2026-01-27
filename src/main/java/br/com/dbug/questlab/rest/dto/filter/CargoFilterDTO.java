@@ -12,4 +12,5 @@ public class CargoFilterDTO {
     private Integer size = 10;
     private String sortBy = "nome";
     private String sortDirection = "ASC";
+
 }

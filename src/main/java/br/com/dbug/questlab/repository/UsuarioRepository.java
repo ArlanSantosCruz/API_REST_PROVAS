@@ -1,12 +1,12 @@
 package br.com.dbug.questlab.repository;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import br.com.dbug.questlab.model.UsuarioModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-//extends pode usar JpaRepository ou CRUDrepository
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioModel,Integer> {
     Optional<UsuarioModel> findByEmail(String email);
@@ -26,4 +26,13 @@ public interface UsuarioRepository extends JpaRepository<UsuarioModel,Integer> {
 
     Optional<UsuarioModel> findByCelular(String celular);
     boolean existsByCelular(String celular);
+
+    // Busca paginada por nome
+    Page<UsuarioModel> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
+
+    // Busca paginada por email
+    Page<UsuarioModel> findByEmailContainingIgnoreCase(String email, Pageable pageable);
+
+    // Busca paginada por perfil
+    Page<UsuarioModel> findByPerfil(String perfil, Pageable pageable);
 }

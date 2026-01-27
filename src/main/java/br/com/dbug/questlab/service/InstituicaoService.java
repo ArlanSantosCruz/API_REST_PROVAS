@@ -11,7 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import br.com.dbug.questlab.rest.dto.filter.InstituicaoFilterDTO;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -109,4 +113,33 @@ public class InstituicaoService {
         entity.setAtivo(true);
         repository.save(entity);
     }
+    @Transactional(readOnly = true)
+    public Page<InstituicaoResponseDTO> findAllPaginated(InstituicaoFilterDTO filter) {
+        log.info("Listando instituições com filtros e paginação");
+
+        // Configura a ordenação
+        Sort sort = Sort.by(
+                filter.getSortDirection() != null && filter.getSortDirection().equalsIgnoreCase("DESC")
+                        ? Sort.Direction.DESC
+                        : Sort.Direction.ASC,
+                filter.getSortBy() != null ? filter.getSortBy() : "id"
+        );
+
+        // Cria o objeto Pageable
+        Pageable pageable = PageRequest.of(
+                filter.getPage() != null ? filter.getPage() : 0,
+                filter.getSize() != null ? filter.getSize() : 10,
+                sort
+        );
+
+        // Busca todos
+        Page<InstituicaoModel> page = repository.findAll(pageable);
+
+        // Converte para DTO
+        return page.map(instituicao -> modelMapper.map(instituicao, InstituicaoResponseDTO.class));
+    }
+
+
+
+
 }

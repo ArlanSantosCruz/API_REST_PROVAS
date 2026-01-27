@@ -21,14 +21,12 @@ public interface QuestaoRepository extends JpaRepository<QuestaoModel, Integer> 
     List<QuestaoModel> findByProvaId(Integer provaId);
     List<QuestaoModel> findByAssuntoId(Integer assuntoId);
 
-    /**
-     * UC-01: Relatório de Questões por Disciplina
-     *
-     * Retorna um relatório com a quantidade de questões por disciplina,
-     * separando questões ativas e anuladas.
-     *
-     * @return Lista de relatórios por disciplina
-     */
+
+
+     //Retorna um relatório com a quantidade de questões por disciplina,
+     //separando questões ativas e anuladas.
+     //@return Lista de relatórios por disciplina
+
     @Query("SELECT new br.com.dbug.questlab.rest.dto.response.RelatorioDisciplinaDTO(" +
             "    d.id, " +
             "    d.nome, " +
@@ -42,30 +40,27 @@ public interface QuestaoRepository extends JpaRepository<QuestaoModel, Integer> 
             "ORDER BY d.nome")
     List<RelatorioDisciplinaDTO> gerarRelatorioPorDisciplina();
 
-    /**
-     * Conta total de questões ativas (não anuladas)
-     */
+    //Conta total de questões ativas (não anuladas)
+
     long countByAnulada(boolean anulada);
 
-    /**
-     * Conta questões por disciplina
-     */
+    //Conta questões por disciplina
     @Query("SELECT COUNT(q) FROM QuestaoModel q " +
             "JOIN q.assunto a " +
             "WHERE a.disciplina.id = :disciplinaId")
     long countByDisciplinaId(Integer disciplinaId);
 
-    /**
-     * Conta questões ativas por disciplina
-     */
+
+     //Conta questões ativas por disciplina
+
     @Query("SELECT COUNT(q) FROM QuestaoModel q " +
             "JOIN q.assunto a " +
             "WHERE a.disciplina.id = :disciplinaId AND q.anulada = false")
     long countAtivasByDisciplinaId(Integer disciplinaId);
 
-    /**
-     * Conta questões anuladas por disciplina
-     */
+
+     //Conta questões anuladas por disciplina
+
     @Query("SELECT COUNT(q) FROM QuestaoModel q " +
             "JOIN q.assunto a " +
             "WHERE a.disciplina.id = :disciplinaId AND q.anulada = true")
