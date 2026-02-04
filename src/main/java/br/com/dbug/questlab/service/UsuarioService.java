@@ -14,6 +14,9 @@ import br.com.dbug.questlab.rest.dto.response.UsuarioResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import br.com.dbug.questlab.rest.dto.response.RelatorioUsuariosAtivosDTO;
+import br.com.dbug.questlab.repository.projection.UsuariosAtivosProjection;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -169,4 +172,22 @@ public class UsuarioService {
     // Converte para DTO
     return page.map(usuario -> modelMapper.map(usuario, UsuarioResponseDTO.class));
 }
+    @Transactional(readOnly = true)
+    public List<RelatorioUsuariosAtivosDTO> relatorioUsuariosAtivos() {
+        log.info("Gerando relatório de usuários ativos");
+
+        // Busca apenas usuários ativos (SEM senha)
+        List<UsuariosAtivosProjection> projections = repository.findUsuariosAtivos();
+
+        // Converte Projection → DTO
+        return projections.stream()
+                .map(proj -> new RelatorioUsuariosAtivosDTO(
+                        proj.getNome(),
+                        proj.getEmail(),
+                        proj.getPerfil(),
+                        proj.getDataNascimento()
+                ))
+                .collect(Collectors.toList());
+    }
+
 }

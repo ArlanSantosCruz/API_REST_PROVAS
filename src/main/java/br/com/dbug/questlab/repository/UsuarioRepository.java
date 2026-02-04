@@ -4,8 +4,11 @@ import org.springframework.data.domain.Pageable;
 import br.com.dbug.questlab.model.UsuarioModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
+import br.com.dbug.questlab.repository.projection.UsuariosAtivosProjection;
+import org.springframework.data.jpa.repository.Query;
+import java.util.List;
 import java.util.Optional;
+import br.com.dbug.questlab.repository.projection.ContagemUsuariosProjection;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioModel,Integer> {
@@ -35,4 +38,26 @@ public interface UsuarioRepository extends JpaRepository<UsuarioModel,Integer> {
 
     // Busca paginada por perfil
     Page<UsuarioModel> findByPerfil(String perfil, Pageable pageable);
+
+    @Query("""
+    SELECT 
+        u.nome as nome,
+        u.email as email,
+        u.perfil as perfil,
+        u.dataNascimento as dataNascimento
+    FROM UsuarioModel u
+    WHERE u.ativo = true
+    ORDER BY u.nome
+""")
+    List<UsuariosAtivosProjection> findUsuariosAtivos();
+
+    @Query("""
+    SELECT 
+        COUNT(u.id) as totalUsuarios,
+        SUM(CASE WHEN u.ativo = true THEN 1 ELSE 0 END) as totalUsuariosAtivos
+    FROM UsuarioModel u
+""")
+    ContagemUsuariosProjection contarUsuarios();
+
+
 }

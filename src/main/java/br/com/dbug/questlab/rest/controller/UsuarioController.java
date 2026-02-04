@@ -13,7 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import br.com.dbug.questlab.rest.dto.response.RelatorioUsuariosAtivosDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 
 @Slf4j
@@ -92,4 +93,12 @@ public class UsuarioController {
         usuarioService.activate(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/relatorio/usuarios-ativos")
+    @Operation(summary = "Relatório de usuários ativos",
+            description = "Lista todos os usuários ativos (sem retornar senha)")
+    public ResponseEntity<List<RelatorioUsuariosAtivosDTO>> relatorioUsuariosAtivos() {
+        List<RelatorioUsuariosAtivosDTO> relatorio = usuarioService.relatorioUsuariosAtivos();
+        return ResponseEntity.ok(relatorio);
+    }
+
 }

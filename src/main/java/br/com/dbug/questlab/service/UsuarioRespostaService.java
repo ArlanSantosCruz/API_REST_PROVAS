@@ -15,8 +15,10 @@ import br.com.dbug.questlab.rest.dto.response.UsuarioRespostaResponseDTO;
 import br.com.dbug.questlab.rest.dto.simplified.AlternativaIdDTO;
 import br.com.dbug.questlab.rest.dto.simplified.QuestaoIdDTO;
 import br.com.dbug.questlab.rest.dto.simplified.UsuarioIdDTO;
-import io.micrometer.common.KeyValues;
-import lombok.RequiredArgsConstructor;
+import br.com.dbug.questlab.rest.dto.filter.RelatorioDesempenhoFilterDTO;
+import br.com.dbug.questlab.rest.dto.response.RelatorioDesempenhoDTO;
+import br.com.dbug.questlab.repository.projection.DesempenhoUsuarioProjection;
+import java.util.Date;import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -347,5 +349,33 @@ public class UsuarioRespostaService {
         response.setAcertou(entity.getAlternativaEscolhida().getCorreta());
 
         return response;
+    }
+
+    @Transactional(readOnly = true)
+    public RelatorioDesempenhoDTO relatorioDesempenhoPorUsuario(RelatorioDesempenhoFilterDTO filter) {
+        log.info("Gerando relatório de desempenho para usuário ID: {}", filter.getUsuarioId());
+
+        DesempenhoUsuarioProjection projection;
+
+        // Verifica se tem filtro de data
+        if (filter.getDataInicial() != null && filter.getDataFinal() != null) {
+            // Converte LocalDate para Date (se necessário)
+            Date dataIni = java.sql.Date.valueOf(filter.getDataInicial());
+            Date dataFim = java.sql.Date.valueOf(filter.getDataFinal());
+
+            projection = usuarioRespostaRepository.findDesempenhoByUsuarioIdAndPeriodo(
+                    filter.getUsuarioId(), dataIni, dataFim);
+        } else {
+            projection = usuarioRespostaRepository.findDesempenhoByUsuarioId(filter.getUsuarioId());
+        }
+
+        // Repository retorna os dados brutos
+        // Service faz os cálculos (taxa de aproveitamento)
+        return new RelatorioDesempenhoDTO(
+                projection.getTotalQuestoesRespondidas(),
+                projection.getTotalAcertos(),
+                projection.getTotalErros()
+                // Taxa calculada automaticamente no construtor do DTO
+        );
     }
 }
