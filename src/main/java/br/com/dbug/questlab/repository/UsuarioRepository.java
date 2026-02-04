@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 import br.com.dbug.questlab.repository.projection.ContagemUsuariosProjection;
+import br.com.dbug.questlab.repository.projection.IndicadoresUsuariosProjection;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioModel,Integer> {
@@ -59,5 +60,11 @@ public interface UsuarioRepository extends JpaRepository<UsuarioModel,Integer> {
 """)
     ContagemUsuariosProjection contarUsuarios();
 
-
+    @Query("""
+    SELECT 
+        COUNT(u.id) as totalUsuarios,
+        SUM(CASE WHEN u.ativo = true THEN 1 ELSE 0 END) as totalUsuariosAtivos
+    FROM UsuarioModel u
+""")
+    IndicadoresUsuariosProjection getIndicadoresUsuarios();
 }

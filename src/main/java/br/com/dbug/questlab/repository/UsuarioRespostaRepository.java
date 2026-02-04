@@ -10,7 +10,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import br.com.dbug.questlab.repository.projection.ContagemRespostasProjection;
-
+import br.com.dbug.questlab.repository.projection.EvolucaoAlunoProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import br.com.dbug.questlab.repository.projection.DesempenhoDisciplinaProjection;
+import br.com.dbug.questlab.repository.projection.IndicadoresAprendizadoProjection;
 
 @Repository
 public interface UsuarioRespostaRepository extends JpaRepository<UsuarioRespostaModel, Integer> {
@@ -83,4 +87,77 @@ public interface UsuarioRespostaRepository extends JpaRepository<UsuarioResposta
             @Param("mes") Integer mes,
             @Param("ano") Integer ano
     );
+    @Query("""
+    SELECT 
+        d.nome as disciplina,
+        a.nome as assunto,
+        COUNT(ur.id) as totalTentativas,
+        SUM(CASE WHEN ur.acerto = true THEN 1 ELSE 0 END) as totalAcertos
+    FROM UsuarioRespostaModel ur
+    INNER JOIN ur.questao q
+    INNER JOIN q.assunto a
+    INNER JOIN a.disciplina d
+    WHERE ur.usuario.id = :usuarioId
+    GROUP BY d.id, d.nome, a.id, a.nome
+    ORDER BY d.nome, a.nome
+""")
+    Page<EvolucaoAlunoProjection> findEvolucaoByUsuarioId(
+            @Param("usuarioId") Integer usuarioId,
+            Pageable pageable
+    );
+
+    // Query SEM filtro de concurso
+    @Query("""
+    SELECT 
+        d.nome as disciplina,
+        COUNT(ur.id) as totalTentativas,
+        SUM(CASE WHEN ur.acerto = true THEN 1 ELSE 0 END) as totalAcertos,
+        0L as numeroQuestoesAnuladas
+    FROM UsuarioRespostaModel ur
+    INNER JOIN ur.questao q
+    INNER JOIN q.assunto a
+    INNER JOIN a.disciplina d
+    WHERE d.id = :disciplinaId
+    AND q.anulada = false
+    AND ur.dataResposta BETWEEN :dataInicial AND :dataFinal
+    GROUP BY d.id, d.nome
+""")
+    DesempenhoDisciplinaProjection findDesempenhoPorDisciplina(
+            @Param("disciplinaId") Integer disciplinaId,
+            @Param("dataInicial") Date dataInicial,
+            @Param("dataFinal") Date dataFinal
+    );
+
+    // Query COM filtro de concurso
+    @Query("""
+    SELECT 
+        d.nome as disciplina,
+        COUNT(ur.id) as totalTentativas,
+        SUM(CASE WHEN ur.acerto = true THEN 1 ELSE 0 END) as totalAcertos,
+        0L as numeroQuestoesAnuladas
+    FROM UsuarioRespostaModel ur
+    INNER JOIN ur.questao q
+    INNER JOIN q.assunto a
+    INNER JOIN a.disciplina d
+    INNER JOIN q.prova p
+    WHERE d.id = :disciplinaId
+    AND p.concurso.id = :concursoId
+    AND q.anulada = false
+    AND ur.dataResposta BETWEEN :dataInicial AND :dataFinal
+    GROUP BY d.id, d.nome
+""")
+    DesempenhoDisciplinaProjection findDesempenhoPorDisciplinaEConcurso(
+            @Param("disciplinaId") Integer disciplinaId,
+            @Param("concursoId") Integer concursoId,
+            @Param("dataInicial") Date dataInicial,
+            @Param("dataFinal") Date dataFinal
+    );
+
+    @Query("""
+    SELECT 
+        COUNT(ur.id) as totalTentativas,
+        SUM(CASE WHEN ur.acerto = true THEN 1 ELSE 0 END) as totalAcertos
+    FROM UsuarioRespostaModel ur
+""")
+    IndicadoresAprendizadoProjection getIndicadoresAprendizado();
 }

@@ -48,6 +48,12 @@ public class QuestaoModel {
 
     @Column(name = "data_anulacao")
     private LocalDate dataAnulacao;
+    @Column(name = "data_cadastro")
+    private LocalDate dataCadastro;
 
+    @PrePersist
+    protected void onCreate() {
+        dataCadastro = LocalDate.now();
+    }
 
 }

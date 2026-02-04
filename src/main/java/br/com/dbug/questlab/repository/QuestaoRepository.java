@@ -8,10 +8,9 @@ import java.time.LocalDate;
 import br.com.dbug.questlab.model.QuestaoModel;
 import br.com.dbug.questlab.rest.dto.response.RelatorioDisciplinaDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import br.com.dbug.questlab.repository.projection.QuestoesPorDisciplinaProjection;
-import org.springframework.data.jpa.repository.Query;
+import br.com.dbug.questlab.repository.projection.IndicadoresQuestoesProjection;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,5 +111,31 @@ public interface QuestaoRepository extends JpaRepository<QuestaoModel, Integer> 
             Pageable pageable
     );
 
+    @Query("""
+    SELECT COUNT(q.id)
+    FROM QuestaoModel q
+    INNER JOIN q.assunto a
+    WHERE a.disciplina.id = :disciplinaId
+    AND q.anulada = true
+""")
+    Long countQuestoesAnuladasByDisciplina(@Param("disciplinaId") Integer disciplinaId);
+
+    @Query("""
+    SELECT 
+        COUNT(q.id) as totalQuestoesCadastradas,
+        (SELECT COUNT(DISTINCT ur.questao.id) 
+         FROM UsuarioRespostaModel ur) as totalQuestoesResolvidas
+    FROM QuestaoModel q
+""")
+    IndicadoresQuestoesProjection getIndicadoresQuestoes();
+
+    // Query para contar questões do mês anterior (crescimento)
+    @Query("""
+    SELECT COUNT(q.id)
+    FROM QuestaoModel q
+    WHERE MONTH(q.dataCadastro) = :mes
+    AND YEAR(q.dataCadastro) = :ano
+""")
+    Long countQuestoesPorMes(@Param("mes") Integer mes, @Param("ano") Integer ano);
 
 }

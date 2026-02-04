@@ -25,10 +25,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
+import br.com.dbug.questlab.rest.dto.response.RelatorioEvolucaoAlunoDTO;
+import br.com.dbug.questlab.repository.projection.EvolucaoAlunoProjection;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.stream.Collectors;
+import br.com.dbug.questlab.rest.dto.filter.RelatorioDesempenhoDisciplinaFilterDTO;
+import br.com.dbug.questlab.rest.dto.response.RelatorioDesempenhoDisciplinaDTO;
+import br.com.dbug.questlab.repository.projection.DesempenhoDisciplinaProjection;
 
 @Slf4j
 @Service
@@ -376,6 +381,67 @@ public class UsuarioRespostaService {
                 projection.getTotalAcertos(),
                 projection.getTotalErros()
                 // Taxa calculada automaticamente no construtor do DTO
+        );
+    }
+    @Transactional(readOnly = true)
+    public Page<RelatorioEvolucaoAlunoDTO> relatorioEvolucaoAluno(
+            Integer usuarioId,
+            Integer page,
+            Integer size) {
+        log.info("Gerando relatório de evolução para usuário ID: {}", usuarioId);
+
+        // Ordena por percentual de acertos (será calculado depois)
+        // Como não podemos ordenar por campo calculado, ordenamos por disciplina/assunto
+        Pageable pageable = PageRequest.of(page, size, Sort.by("disciplina", "assunto"));
+
+        Page<EvolucaoAlunoProjection> projections = usuarioRespostaRepository
+                .findEvolucaoByUsuarioId(usuarioId, pageable);
+
+        // Converte Projection → DTO (com cálculo de percentual)
+        return projections.map(proj -> new RelatorioEvolucaoAlunoDTO(
+                proj.getDisciplina(),
+                proj.getAssunto(),
+                proj.getTotalTentativas(),
+                proj.getTotalAcertos()
+                // Percentual calculado no construtor do DTO
+        ));
+    }
+
+    @Transactional(readOnly = true)
+    public RelatorioDesempenhoDisciplinaDTO relatorioDesempenhoPorDisciplina(
+            RelatorioDesempenhoDisciplinaFilterDTO filter) {
+        log.info("Gerando relatório de desempenho para disciplina ID: {}", filter.getDisciplinaId());
+
+        // Converte LocalDate para Date
+        Date dataIni = java.sql.Date.valueOf(filter.getDataInicial());
+        Date dataFim = java.sql.Date.valueOf(filter.getDataFinal());
+
+        // Busca desempenho (com ou sem filtro de concurso)
+        DesempenhoDisciplinaProjection projection;
+        if (filter.getConcursoId() != null) {
+            projection = usuarioRespostaRepository.findDesempenhoPorDisciplinaEConcurso(
+                    filter.getDisciplinaId(),
+                    filter.getConcursoId(),
+                    dataIni,
+                    dataFim
+            );
+        } else {
+            projection = usuarioRespostaRepository.findDesempenhoPorDisciplina(
+                    filter.getDisciplinaId(),
+                    dataIni,
+                    dataFim
+            );
+        }
+
+        // Busca quantidade de questões anuladas
+        Long questoesAnuladas = questaoRepository.countQuestoesAnuladasByDisciplina(filter.getDisciplinaId());
+
+        // Cria DTO com cálculo de média
+        return new RelatorioDesempenhoDisciplinaDTO(
+                projection.getDisciplina(),
+                projection.getTotalTentativas(),
+                projection.getTotalAcertos(),
+                questoesAnuladas
         );
     }
 }
